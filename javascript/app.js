@@ -11,7 +11,25 @@
 
 // get a reference to the database via firebase
 var database = firebase.database();
+var provider = new firebase.auth.GithubAuthProvider();
+var provider = new firebase.auth.GoogleAuthProvider();
 
+firebase.auth().signInWithPopup(provider).then(function(result) {
+  // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+  var token = result.credential.accessToken;
+  // The signed-in user info.
+  var user = result.user;
+  // ...
+}).catch(function(error) {
+  // Handle Errors here.
+  var errorCode = error.code;
+  var errorMessage = error.message;
+  // The email of the user's account used.
+  var email = error.email;
+  // The firebase.auth.AuthCredential type that was used.
+  var credential = error.credential;
+  // ...
+});
 
 $("#addTrain").on("click", function(event) {
 	event.preventDefault();
@@ -20,7 +38,7 @@ $("#addTrain").on("click", function(event) {
 var tName = $("#trainName").val().trim();
 var tDest = $("#trainDest").val().trim();
 // when retrieving first train data make sure to parse it into a unix timestamp
-var tTime = moment($("#firstTrain").val().trim(), "HH").format("X");
+var tTime = moment($("#firstTrain").val().trim(), "HH:mm").format("X");
 // console.log("Orig start time: " + moment.unix(tTime).format('HH:mm a'));
 var tFreq = $("#trainFreq").val().trim();
 
@@ -66,7 +84,7 @@ var tArrival = "";
 
 console.log(tName);
 console.log(tDest);
-console.log("Start time: " + tTime);
+console.log(tTime);
 console.log(tFreq);
 
 
@@ -81,8 +99,8 @@ console.log(result);*/
 var now = moment();
 console.log("Currently: " + now.format('HH:mm'));
 
-var convertedStTime = moment.unix(tTime).subtract(1, "years");
-console.log("Start time: " + convertedStTime.format('HH:mm'));
+var convertedStTime = moment.unix(tTime, "HH:mm A").subtract(1, "years");
+console.log("Start time: " + convertedStTime.format('HH:mm A'));
 
 var diffTime = now.diff(moment(convertedStTime), "minutes");
 console.log("Difference: " + diffTime);
@@ -101,7 +119,7 @@ tArrival = now.add(timeInMinutes, "minutes");
 	// format timeInMinutes & store in var, "make the time pretty"
 // IT'S OKAY TO JUST SHOW EMPTY STRINGS FOR 'timeInMinutes' / 'tArrival'
 
-var arrivalTimePretty = moment.unix(tArrival).format("HH:mm");
+var arrivalTimePretty = moment.unix(tArrival).format("hh:mm A");
 	
 // append to our table of trains, inside the tbody, with a new row of the train data
 $("#train-list > tbody").append(
@@ -110,10 +128,6 @@ $("#train-list > tbody").append(
 
 
 	
-
-
-
-
 
 
 });
